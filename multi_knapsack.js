@@ -40,7 +40,7 @@ function mthm(n, m, p, w, c) {
     // Set the initial greedy distribution
     var c_hat = c.slice(0);
     for (var i=0; i<m; i++) {
-       z = greedy(n, p, w, y, z, i, c_hat); 
+       z = greedy(n, p, w, y, z, i, c_hat[i]); 
     }
 
     // Rearrange
@@ -49,8 +49,32 @@ function mthm(n, m, p, w, c) {
     var i = 0;
     for (var j=n-1; j>=0; j--) {
         if (y[j] >= 0) {
-            var search_array =             
+            var search_array = range(i, m).concat(range(0, i-1));
+            var l = -1;
+            for (var x=0; x<m; x++) {
+                if (w[j] <= c_hat[x]) {
+                    l = x;
+                }
+            }
+            if (l < 0) {
+                y[j] = 0;
+            }
+            else {
+                y[j] = l;
+                c_hat[l] = c_hat[l] - w[j]; 
+                z = z + p[j];
+                if (l == m-1) {
+                    i = 0;
+                }
+                else {
+                    i = l + 1;
+                }
+            }
         }
+    }
+    // Greedy fill again after rearranging
+    for (var i=0; i<m; i++) {
+       z = greedy(n, p, w, y, z, i, c_hat[i]);
     }
 
     return [z, y];
@@ -69,6 +93,8 @@ function range(i, m) {
 }
 
 function run() {
+    // A test case to demonstrate
+    
     var n = 9;
     var m = 2;
     // p and w must be sorted by p[0]/w[0] <= p[1]/w[1] <= ... p[n]/w[n]
