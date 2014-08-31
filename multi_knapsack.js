@@ -93,8 +93,6 @@ function mthm(n, m, p, w, c) {
                             min_unused_weight = w[q];
                         }
                     }
-                    console.log(w);
-                    console.log("muw= "+ min_unused_weight);
                     if (d <= c_hat[y[l]] && (c_hat[y[h]] + d) >= min_unused_weight) {
                         var t = 0;
                         var max_profit = -1;
