@@ -52,8 +52,9 @@ function mthm(n, m, p, w, c) {
             var search_array = range(i, m).concat(range(0, i-1));
             var l = -1;
             for (var x=0; x<m; x++) {
-                if (w[j] <= c_hat[x]) {
-                    l = x;
+                if (w[j] <= c_hat[search_array[x]]) {
+                    l = search_array[x];
+                    break;
                 }
             }
             if (l < 0) {
@@ -76,6 +77,68 @@ function mthm(n, m, p, w, c) {
     for (var i=0; i<m; i++) {
        z = greedy(n, p, w, y, z, i, c_hat[i]);
     }
+    
+    // First improvement
+    for (var j=0; j<n; j++) {
+        if (y[j] > -1) {
+            for (var k=j+1; k<n; k++) {
+               if (y[k] > -1 && y[k] != y[j]) {
+                    w_slice = w.slice(j, k+1);
+                    var h = j + argmax(w_slice);
+                    var l = j + argmin(w_slice);
+                    var d = w[h] - w[l];
+                    var min_unused_weight = 99999999; 
+                    for (var q=0; q<n; q++) {
+                        if (y[q] < 0 && w[q] < min_unused_weight) {
+                            min_unused_weight = w[q];
+                        }
+                    }
+                    console.log(w);
+                    console.log("muw= "+ min_unused_weight);
+                    if (d <= c_hat[y[l]] && (c_hat[y[h]] + d) >= min_unused_weight) {
+                        var t = 0;
+                        var max_profit = -1;
+                        for (var q=0; q<n; q++) {
+                            if (y[q] < 0 && w[q] <= (c_hat[y[h]]+d) && p[q] > max_profit) {
+                                t = q;
+                                max_profit = p[t];
+                            }
+                        }
+                        c_hat[y[h]] = c_hat[y[h]] + d - w[t];
+                        c_hat[y[l]] = c_hat[y[l]] - d;
+                        y[t] = y[h];
+                        y[h] = y[l];
+                        y[l] = y[t];
+                        z = z + p[t];
+                    }
+               }
+            }
+        }
+    }
+    for (var j=n; j >= 0; j--) {
+        if (y[j] > 0) {
+            c_hat_temp = c_hat[y[j]] + w[j];
+            var Y = Array();
+            for (var k=0; k<n; k++) {
+                if (y[k] < 0 && w[k] <= c_hat_temp) {
+                    Y.push(k);
+                    c_hat_temp -= w[k];
+                }
+            }
+            var sum_Y = 0;
+            for (var i=0; i<Y.length; i++) {
+                sum_Y += p[Y[i]]
+            }
+            if (sum_Y > p[j]) {
+                for (var i=0; i<Y.length; i++) {
+                    y[Y[i]] = y[j];
+                }
+                c_hat[y[j]] = c_hat_temp;
+                y[j] = 0;
+                z += sum_Y - (Y.length * p[j]);
+            }
+        }
+    }
 
     return [z, y];
 }
@@ -87,9 +150,29 @@ function mthm(n, m, p, w, c) {
 function range(i, m) {
     var a = Array();
     for (var j=i; j<m; j++) {
-        a += j;
+        a.push(j);
     }
     return a;
+}
+
+function argmax(arr) {
+    var max_i = 0;
+    for (var i=1; i<arr.length; i++) {
+        if (arr[i] > arr[max_i]) {
+            max_i = i;
+        }
+    }
+    return max_i;
+}
+
+function argmin(arr) {
+    var min_i = 0;
+    for (var i=1; i<arr.length; i++) {
+        if (arr[i] < arr[min_i]) {
+            min_i = i;
+        }
+    }
+    return min_i;
 }
 
 function run() {
