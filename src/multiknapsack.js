@@ -8,7 +8,7 @@
  */
 
 
-var multiknapsack = {
+var multiknapsack = new function() {
     /*
      * n is the number of items 
      * p is profit per item 
@@ -20,7 +20,7 @@ var multiknapsack = {
      *
      * Returns an initial greedy allocation of 
      */
-    function greedy(n, p, w, y, z, i, c_i) {
+    var greedy = function(n, p, w, y, z, i, c_i) {
         for (var j=0; j<n; j++) {
             if (y[j] == -1 && w[j] <= c_i) {
                 y[j] = i;
@@ -31,7 +31,7 @@ var multiknapsack = {
         return z;
     }
 
-    function mthm(n, m, p, w, c) {
+    this.mthm = function(n, m, p, w, c) {
         var z = 0;
         var y = new Array();
 
@@ -147,7 +147,7 @@ var multiknapsack = {
      * A simple range helper function, returns
      * the range i ... m including i and excluding on m
      */
-    function range(i, m) {
+    var range = function(i, m) {
         var a = Array();
         for (var j=i; j<m; j++) {
             a.push(j);
@@ -155,7 +155,7 @@ var multiknapsack = {
         return a;
     }
 
-    function argmax(arr) {
+    var argmax = function(arr) {
         var max_i = 0;
         for (var i=1; i<arr.length; i++) {
             if (arr[i] > arr[max_i]) {
@@ -165,7 +165,7 @@ var multiknapsack = {
         return max_i;
     }
 
-    function argmin(arr) {
+    var argmin = function(arr) {
         var min_i = 0;
         for (var i=1; i<arr.length; i++) {
             if (arr[i] < arr[min_i]) {
@@ -176,20 +176,3 @@ var multiknapsack = {
     }
 }
 
-    function run() {
-        // A test case to demonstrate
-        
-        var n = 9;
-        var m = 2;
-        // p and w must be sorted by p[0]/w[0] <= p[1]/w[1] <= ... p[n]/w[n]
-        var p = [80, 20, 60, 40, 60, 60, 65, 25, 30]; 
-        var w = [40, 10, 40, 30, 50, 50, 55, 25, 40]; 
-        var c = [100, 150];
-        var return_vals = mthm(n, m, p, w, c);
-        z = return_vals[0];
-        y = return_vals[1];
-        console.log(z);
-        console.log(y);
-    }
-
-    run();
