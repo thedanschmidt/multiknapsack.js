@@ -126,21 +126,23 @@ var multiknapsack = new function() {
                     }
                 }
                 var sum_Y = 0;
+                var temp_y = {};
                 for (var i=0; i<Y.length; i++) {
                     sum_Y += p[Y[i]]
                 }
                 if (sum_Y > p[j]) {
                     for (var i=0; i<Y.length; i++) {
+                        temp_y[j] = y[Y[i]];
                         y[Y[i]] = y[j];
                     }
                     c_hat[y[j]] = c_hat_temp;
-                    y[j] = 0;
+                    y[j] = temp_y[j];
                     z += sum_Y - (Y.length * p[j]);
                 }
             }
         }
 
-        return [z, y];
+        return [z, y, w, c];
     }
 
     /*
